@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "67583402622",
+    "project_id": "larg-40487172",
+    "storage_bucket": "larg-40487172.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:67583402622:android:e4dcae8b5588b7335b6e2f",
+        "android_client_info": {
+          "package_name": "com.example.securesamvad"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD6lPhQy8H5CR6niIhomuPikSNxn_HrgGc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

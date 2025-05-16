@@ -42,11 +42,6 @@ public class login extends AppCompatActivity {
 
 
         //Codes written by GOURAB
-        countrySpinner = findViewById(R.id.countrySpinner);
-        countryCodeText = findViewById(R.id.countryCodeText);
-        phoneNumberInput = findViewById(R.id.phoneNumberInput);
-        verifyButton = findViewById(R.id.verifyButton);
-
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, countryNames);
         countrySpinner.setAdapter(adapter);

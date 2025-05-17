@@ -19,6 +19,9 @@
         android:theme="@style/Theme.SecureSamVad"
         tools:targetApi="31">
         <activity
+            android:name=".activities.Contacts"
+            android:exported="false" />
+        <activity
             android:name=".activities.Otp"
             android:exported="false" />
         <activity

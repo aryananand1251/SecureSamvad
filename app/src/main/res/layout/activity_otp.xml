@@ -47,6 +47,7 @@
 
         <!-- Masked Phone Number -->
         <TextView
+            android:id="@+id/textMobile"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
@@ -62,11 +63,12 @@
             android:orientation="horizontal"
             android:gravity="center"
             android:layout_marginTop="24dp"
-            android:weightSum="4"
-            android:layout_marginBottom="12dp">
+            android:layout_marginBottom="12dp"
+            android:weightSum="6">
 
-            <!-- Each OTP Box -->
+            <!-- 6 OTP Boxes -->
             <EditText
+                android:id="@+id/d1"
                 android:layout_width="0dp"
                 android:layout_height="56dp"
                 android:layout_margin="4dp"
@@ -76,10 +78,10 @@
                 android:inputType="number"
                 android:maxLength="1"
                 android:textColor="@android:color/black"
-                android:textSize="20sp"
-                tools:ignore="SpeakableTextPresentCheck" />
+                android:textSize="20sp" />
 
             <EditText
+                android:id="@+id/d2"
                 android:layout_width="0dp"
                 android:layout_height="56dp"
                 android:layout_margin="4dp"
@@ -89,10 +91,10 @@
                 android:inputType="number"
                 android:maxLength="1"
                 android:textColor="@android:color/black"
-                android:textSize="20sp"
-                tools:ignore="SpeakableTextPresentCheck" />
+                android:textSize="20sp" />
 
             <EditText
+                android:id="@+id/d3"
                 android:layout_width="0dp"
                 android:layout_height="56dp"
                 android:layout_margin="4dp"
@@ -102,10 +104,10 @@
                 android:inputType="number"
                 android:maxLength="1"
                 android:textColor="@android:color/black"
-                android:textSize="20sp"
-                tools:ignore="SpeakableTextPresentCheck" />
+                android:textSize="20sp" />
 
             <EditText
+                android:id="@+id/d4"
                 android:layout_width="0dp"
                 android:layout_height="56dp"
                 android:layout_margin="4dp"
@@ -115,9 +117,35 @@
                 android:inputType="number"
                 android:maxLength="1"
                 android:textColor="@android:color/black"
-                android:textSize="20sp"
-                tools:ignore="SpeakableTextPresentCheck" />
+                android:textSize="20sp" />
+
+            <EditText
+                android:id="@+id/d5"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_margin="4dp"
+                android:layout_weight="1"
+                android:background="@drawable/otp_box_background"
+                android:gravity="center"
+                android:inputType="number"
+                android:maxLength="1"
+                android:textColor="@android:color/black"
+                android:textSize="20sp" />
+
+            <EditText
+                android:id="@+id/d6"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_margin="4dp"
+                android:layout_weight="1"
+                android:background="@drawable/otp_box_background"
+                android:gravity="center"
+                android:inputType="number"
+                android:maxLength="1"
+                android:textColor="@android:color/black"
+                android:textSize="20sp" />
         </LinearLayout>
+
 
         <!-- Resend Section -->
         <TextView
@@ -128,6 +156,7 @@
             android:textSize="12sp" />
 
         <TextView
+            android:id="@+id/resendCode"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Resend code"
@@ -137,8 +166,17 @@
             android:layout_marginTop="-18dp"
             android:layout_marginStart="130dp" />
 
+        <ProgressBar
+            android:id="@+id/progressbar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center">
+
+            </ProgressBar>
+
         <!-- Continue Button -->
         <Button
+            android:id="@+id/verify"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Continue"

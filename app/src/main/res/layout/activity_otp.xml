@@ -14,8 +14,7 @@
     <ImageView
         android:layout_width="120dp"
         android:layout_height="120dp"
-        android:layout_marginBottom="40dp"
-        android:src="">
+        android:layout_marginBottom="40dp">
 
     </ImageView>
 
@@ -70,50 +69,54 @@
             <EditText
                 android:layout_width="0dp"
                 android:layout_height="56dp"
-                android:layout_weight="1"
                 android:layout_margin="4dp"
-                android:gravity="center"
+                android:layout_weight="1"
                 android:background="@drawable/otp_box_background"
+                android:gravity="center"
                 android:inputType="number"
                 android:maxLength="1"
+                android:textColor="@android:color/black"
                 android:textSize="20sp"
-                android:textColor="@android:color/black" />
+                tools:ignore="SpeakableTextPresentCheck" />
 
             <EditText
                 android:layout_width="0dp"
                 android:layout_height="56dp"
-                android:layout_weight="1"
                 android:layout_margin="4dp"
-                android:gravity="center"
+                android:layout_weight="1"
                 android:background="@drawable/otp_box_background"
+                android:gravity="center"
                 android:inputType="number"
                 android:maxLength="1"
+                android:textColor="@android:color/black"
                 android:textSize="20sp"
-                android:textColor="@android:color/black" />
+                tools:ignore="SpeakableTextPresentCheck" />
 
             <EditText
                 android:layout_width="0dp"
                 android:layout_height="56dp"
-                android:layout_weight="1"
                 android:layout_margin="4dp"
-                android:gravity="center"
+                android:layout_weight="1"
                 android:background="@drawable/otp_box_background"
+                android:gravity="center"
                 android:inputType="number"
                 android:maxLength="1"
+                android:textColor="@android:color/black"
                 android:textSize="20sp"
-                android:textColor="@android:color/black" />
+                tools:ignore="SpeakableTextPresentCheck" />
 
             <EditText
                 android:layout_width="0dp"
                 android:layout_height="56dp"
-                android:layout_weight="1"
                 android:layout_margin="4dp"
-                android:gravity="center"
+                android:layout_weight="1"
                 android:background="@drawable/otp_box_background"
+                android:gravity="center"
                 android:inputType="number"
                 android:maxLength="1"
+                android:textColor="@android:color/black"
                 android:textSize="20sp"
-                android:textColor="@android:color/black" />
+                tools:ignore="SpeakableTextPresentCheck" />
         </LinearLayout>
 
         <!-- Resend Section -->

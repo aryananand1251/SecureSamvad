@@ -95,7 +95,7 @@ public class Otp extends AppCompatActivity {
                             verify.setVisibility(View.VISIBLE);
 
                             if (task.isSuccessful()) {
-                                Intent intent = new Intent(Otp.this, Contacts.class);
+                                Intent intent = new Intent(Otp.this, chatList.class);
                                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                 startActivity(intent);
                             } else {

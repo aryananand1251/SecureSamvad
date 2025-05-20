@@ -3,8 +3,8 @@ package com.example.securesamvad.models;
 public class Contact {
 
 
-    private String name;
-    private String phoneNumber;
+    private  String name;
+    private  String phoneNumber;
     private String photoUri;
 
 
@@ -18,6 +18,6 @@ public class Contact {
     }
 
     public String getName() { return name; }
-    public String getPhoneNumber() { return phoneNumber; }
-    public String getPhotoUri() { return photoUri; }
+    public  String getPhoneNumber() { return phoneNumber; }
+    public  String getPhotoUri() { return photoUri; }
 }

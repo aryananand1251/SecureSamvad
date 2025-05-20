@@ -3,6 +3,7 @@ package com.example.securesamvad.activities;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.ContentResolver;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -32,90 +33,86 @@ import java.util.List;
 
 public class contact_list extends AppCompatActivity {
 
-    private RecyclerView recyclerView;
-    private ContactAdapter adapter;
-    private List<Contact> contactList = new ArrayList<>();
-    private EditText searchBar;
 
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_contact_list);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
+        private RecyclerView recyclerView;
+        private ContactAdapter adapter;
+        private List<Contact> contactList = new ArrayList<>();
+        private EditText searchBar;
 
-        recyclerView = findViewById(R.id.recyclerViewContacts);
-        searchBar = findViewById(R.id.searchBar);
+        @Override
+        protected void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            setContentView(R.layout.activity_contact_list); // change to your layout file
 
-        recyclerView.setLayoutManager(new GridLayoutManager(this, 3));
-        adapter = new ContactAdapter(this,contactList);
-        recyclerView.setAdapter(adapter);
+            recyclerView = findViewById(R.id.recyclerViewContacts);
+            searchBar = findViewById(R.id.searchBar);
 
-        searchBar.addTextChangedListener(new TextWatcher() {
-            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
-                adapter.filter(s.toString());
-            }
-            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-            @Override public void afterTextChanged(Editable s) {}
-        });
+            recyclerView.setLayoutManager(new GridLayoutManager(this, 3));
+            adapter = new ContactAdapter(this, contactList);
+            recyclerView.setAdapter(adapter);
 
-        fetchContacts();
-    }
 
-    @SuppressLint("Range")
-    private void fetchContacts() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_CONTACTS}, 1);
-            return;
+            searchBar.addTextChangedListener(new TextWatcher() {
+                @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    adapter.filter(s.toString());
+                }
+                @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+                @Override public void afterTextChanged(Editable s) {}
+            });
+
+            fetchContacts();
         }
 
-        ContentResolver resolver = getContentResolver();
-        Cursor cursor = resolver.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
+        @SuppressLint("Range")
+        private void fetchContacts() {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_CONTACTS}, 1);
+                return;
+            }
 
-        if (cursor != null && cursor.getCount() > 0) {
-            while (cursor.moveToNext()) {
-                @SuppressLint("Range") String id = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
-                @SuppressLint("Range") String name = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+            ContentResolver resolver = getContentResolver();
+            Cursor cursor = resolver.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
 
-                if (cursor.getInt(cursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER)) > 0) {
-                    Cursor pCursor = resolver.query(
-                            ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
-                            null,
-                            ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
-                            new String[]{id}, null
-                    );
+            if (cursor != null && cursor.getCount() > 0) {
+                while (cursor.moveToNext()) {
+                    @SuppressLint("Range") String id = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
+                    @SuppressLint("Range") String name = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
 
-                    if (pCursor != null && pCursor.moveToFirst()) {
-                        String phone = pCursor.getString(pCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-                        String photoUri = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.PHOTO_URI));
-                        contactList.add(new Contact(name, phone, photoUri));
-                        pCursor.close();
+                    if (cursor.getInt(cursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER)) > 0) {
+                        Cursor pCursor = resolver.query(
+                                ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                                null,
+                                ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
+                                new String[]{id}, null
+                        );
+
+                        if (pCursor != null && pCursor.moveToFirst()) {
+                            String phone = pCursor.getString(pCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                            String photoUri = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.PHOTO_URI));
+                            contactList.add(new Contact(name, phone, photoUri));
+                            pCursor.close();
+                        }
                     }
                 }
+                cursor.close();
             }
-            cursor.close();
+
+            adapter.notifyDataSetChanged();
         }
 
-        adapter.notifyDataSetChanged();
-    }
 
-    // Handle permission result
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == 1 && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            fetchContacts();
-        } else {
-            Toast.makeText(this, "Permission denied to read contacts", Toast.LENGTH_SHORT).show();
+
+        // Handle permission result
+        @Override
+        public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+            if (requestCode == 1 && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                fetchContacts();
+            } else {
+                Toast.makeText(this, "Permission denied to read contacts", Toast.LENGTH_SHORT).show();
+            }
         }
-    }
-
-
 
 
 }

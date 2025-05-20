@@ -10,54 +10,54 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.securesamvad.R;
-import com.example.securesamvad.models.message;
+import com.example.securesamvad.models.Message;
+
 
 import java.util.List;
 
 public class chatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private static final int MSG_TYPE_SENT = 1;
-    private static final int MSG_TYPE_RECEIVED = 2;
+    private static final int VIEW_TYPE_SENT = 1;
+    private static final int VIEW_TYPE_RECEIVED = 2;
 
-    private Context context;
-    private List<message> messageList;
+    private List<Message> messageList;
     private String currentUserId;
 
-    public chatAdapter(Context context, List<message> messageList, String currentUserId) {
-        this.context = context;
+    public chatAdapter(Context context, List<Message> messageList, String currentUserId) {
         this.messageList = messageList;
         this.currentUserId = currentUserId;
     }
 
     @Override
     public int getItemViewType(int position) {
-        message message = messageList.get(position);
+        Message message = messageList.get(position);
         if (message.getSenderId().equals(currentUserId)) {
-            return MSG_TYPE_SENT;
+            return VIEW_TYPE_SENT;
         } else {
-            return MSG_TYPE_RECEIVED;
+            return VIEW_TYPE_RECEIVED;
         }
     }
 
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        if (viewType == MSG_TYPE_SENT) {
-            View view = LayoutInflater.from(context).inflate(R.layout.item_message_sent, parent, false);
+        if (viewType == VIEW_TYPE_SENT) {
+            View view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.item_message_sent, parent, false);
             return new SentMessageViewHolder(view);
         } else {
-            View view = LayoutInflater.from(context).inflate(R.layout.item_message_received, parent, false);
+            View view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.item_message_received, parent, false);
             return new ReceivedMessageViewHolder(view);
         }
     }
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        message message = messageList.get(position);
-
-        if (holder.getItemViewType() == MSG_TYPE_SENT) {
+        Message message = messageList.get(position);
+        if (holder instanceof SentMessageViewHolder) {
             ((SentMessageViewHolder) holder).bind(message);
-        } else {
+        } else if (holder instanceof ReceivedMessageViewHolder) {
             ((ReceivedMessageViewHolder) holder).bind(message);
         }
     }
@@ -67,7 +67,7 @@ public class chatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return messageList.size();
     }
 
-    class SentMessageViewHolder extends RecyclerView.ViewHolder {
+    static class SentMessageViewHolder extends RecyclerView.ViewHolder {
         TextView messageText;
 
         public SentMessageViewHolder(@NonNull View itemView) {
@@ -75,12 +75,12 @@ public class chatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             messageText = itemView.findViewById(R.id.messageText);
         }
 
-        void bind(message message) {
-            messageText.setText(message.getMessageText());
+        public void bind(Message message) {
+            messageText.setText(message.getDecryptedText());
         }
     }
 
-    class ReceivedMessageViewHolder extends RecyclerView.ViewHolder {
+    static class ReceivedMessageViewHolder extends RecyclerView.ViewHolder {
         TextView messageText;
 
         public ReceivedMessageViewHolder(@NonNull View itemView) {
@@ -88,8 +88,8 @@ public class chatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             messageText = itemView.findViewById(R.id.messageText);
         }
 
-        void bind(message message) {
-            messageText.setText(message.getMessageText());
+        public void bind(Message message) {
+            messageText.setText(message.getDecryptedText());
         }
     }
 }

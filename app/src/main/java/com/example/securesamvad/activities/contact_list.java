@@ -25,6 +25,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.securesamvad.R;
+import com.example.securesamvad.adapter.ChatListAdapter;
 import com.example.securesamvad.adapter.ContactAdapter;
 import com.example.securesamvad.models.Contact;
 
@@ -63,6 +64,8 @@ public class contact_list extends AppCompatActivity {
 
             fetchContacts();
         }
+
+
 
         @SuppressLint("Range")
         private void fetchContacts() {

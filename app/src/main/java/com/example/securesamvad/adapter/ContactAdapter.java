@@ -1,6 +1,5 @@
 package com.example.securesamvad.adapter;
 
-
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -15,7 +14,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.securesamvad.R;
 import com.example.securesamvad.activities.chat;
-import com.example.securesamvad.activities.chatList;
 import com.example.securesamvad.models.Contact;
 
 import java.util.ArrayList;
@@ -24,7 +22,7 @@ import java.util.List;
 public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ContactViewHolder> {
 
     private List<Contact> contactList;
-    private List<Contact> filteredList;
+    public List<Contact> filteredList;
     private Context context;
 
     public ContactAdapter(Context context, List<Contact> contactList) {
@@ -65,10 +63,12 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ContactV
             holder.image.setImageResource(R.drawable.app_logo); // fallback image
         }
 
+        // Set click listener to open chat activity
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(context, chat.class);
-            intent.putExtra("receiverName", contact.getName());
-            intent.putExtra("receiverNumber", contact.getPhoneNumber());
+            intent.putExtra("name", contact.getName());
+            intent.putExtra("phone", contact.getPhoneNumber());
+            intent.putExtra("photoUri", contact.getPhotoUri());
             context.startActivity(intent);
         });
     }
@@ -88,8 +88,4 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ContactV
             image = itemView.findViewById(R.id.contactImage);
         }
     }
-
-
-
-
 }

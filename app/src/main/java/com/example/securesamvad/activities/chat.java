@@ -1,8 +1,7 @@
 package com.example.securesamvad.activities;
 
-import android.content.Context;
+import android.net.Uri;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -23,8 +22,8 @@ import com.example.securesamvad.utils.keyStorage;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.*;
 
-import java.security.PublicKey;
 import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -50,48 +49,65 @@ public class chat extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
-        // 🔧 Initialize views
+        // Initialize views
         messageEditText = findViewById(R.id.messageEditText);
         sendButton = findViewById(R.id.sendButton);
         chatRecyclerView = findViewById(R.id.chatRecyclerView);
         TextView userName = findViewById(R.id.userName);
         TextView number = findViewById(R.id.number);
+        ImageView userImage = findViewById(R.id.profileImage); // optional for photoUri
 
-        // 🔐 Get Firebase Auth user
-        currentUserId = FirebaseAuth.getInstance().getUid();
-        receiverId = getIntent().getStringExtra("receiverId");
-        receiverName = getIntent().getStringExtra("receiverName");
-        receiverNumber = getIntent().getStringExtra("receiverNumber");
+        // Get intent extras
+        receiverName = getIntent().getStringExtra("name");
+        receiverNumber = getIntent().getStringExtra("phone");
+        String photoUri = getIntent().getStringExtra("photoUri");
 
         userName.setText(receiverName);
         number.setText(receiverNumber);
 
-        // 🔧 RecyclerView setup
+        if (photoUri != null) {
+            userImage.setImageURI(Uri.parse(photoUri));
+        } else {
+            userImage.setImageResource(R.drawable.app_logo); // fallback image
+        }
+
+        // Firebase auth user
+        currentUserId = FirebaseAuth.getInstance().getUid();
+
+        // Setup chat UI
         messageList = new ArrayList<>();
-        chatAdapter = new chatAdapter(this, messageList,currentUserId);
+        chatAdapter = new chatAdapter(this, messageList, currentUserId);
         chatRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         chatRecyclerView.setAdapter(chatAdapter);
 
-        // 📡 Firebase path for chat
-        messagesRef = FirebaseDatabase.getInstance().getReference("messages")
-                .child(getChatId(currentUserId, receiverId));
-
-        // 🧠 Fetch receiver's public key and current user's private key
-        firebaseManager.getUserPublicKey(receiverId, key -> {
-            receiverPublicKey = key;
-        });
-
+        // Ensure local private key exists
         try {
-            keyStorage.generateRSAKeyPair(this); // ensure generated
+            keyStorage.generateRSAKeyPair(this);
             currentUserPrivateKey = keyStorage.getPrivateKey();
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        // 📨 Listen for messages
-        loadMessages();
+        // Get receiver UID by phone number
+        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
+        usersRef.orderByChild("phoneNumber").equalTo(receiverNumber)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        for (DataSnapshot child : snapshot.getChildren()) {
+                            receiverId = child.getKey();
+                            setupChat();
+                            break;
+                        }
+                    }
 
-        // 📤 Send button listener
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        // handle error
+                    }
+                });
+
+        // Send message on click
         sendButton.setOnClickListener(v -> {
             String plainText = messageEditText.getText().toString().trim();
             if (!plainText.isEmpty() && receiverPublicKey != null) {
@@ -101,7 +117,23 @@ public class chat extends AppCompatActivity {
         });
     }
 
-    // 🔐 Encrypt and send message
+    // Setup chat after getting receiverId
+    private void setupChat() {
+        if (receiverId == null || currentUserId == null) return;
+
+        // Load public key of receiver
+        firebaseManager.getUserPublicKey(receiverId, key -> {
+            receiverPublicKey = key;
+        });
+
+        // Firebase path
+        messagesRef = FirebaseDatabase.getInstance().getReference("messages")
+                .child(getChatId(currentUserId, receiverId));
+
+        loadMessages();
+    }
+
+    // Encrypt and send
     private void sendEncryptedMessage(String plainText) {
         encryptionpayLoad payload = cryptoUtils.encryptMessage(plainText, receiverPublicKey);
 
@@ -116,7 +148,7 @@ public class chat extends AppCompatActivity {
         messagesRef.push().setValue(message);
     }
 
-    // 📥 Load and decrypt messages
+    // Load and decrypt messages
     private void loadMessages() {
         messagesRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -125,13 +157,13 @@ public class chat extends AppCompatActivity {
                 for (DataSnapshot snap : snapshot.getChildren()) {
                     Message msg = snap.getValue(Message.class);
                     if (msg != null && msg.getSenderId() != null) {
-                        String decryptedText = cryptoUtils.decryptMessage(
+                        String decrypted = cryptoUtils.decryptMessage(
                                 chat.this,
                                 msg.getCipherText(),
                                 msg.getIv(),
                                 currentUserPrivateKey
                         );
-                        msg.setDecryptedText(decryptedText);
+                        msg.setDecryptedText(decrypted);
                         messageList.add(msg);
                     }
                 }
@@ -141,11 +173,12 @@ public class chat extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
+                // handle error
             }
         });
     }
 
-    // Generate chat ID unique between sender and receiver
+    // Unique chat ID between users
     private String getChatId(String user1, String user2) {
         return user1.compareTo(user2) < 0 ? user1 + "_" + user2 : user2 + "_" + user1;
     }
